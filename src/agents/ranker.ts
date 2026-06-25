@@ -1,4 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { ChatAiGateway } from "../llm.js";
 import {
   RankerOutputSchema,
@@ -31,14 +32,33 @@ const HUMAN = `Rank and prioritize these findings from a multi-pass code review.
 ## Style findings
 {style_findings}
 
-Assign a unique rank to every finding (1 = highest priority). Return the complete ranked list.`;
+Assign a unique rank to every finding (1 = highest priority). Return the complete ranked list.
+
+Respond with a JSON object matching exactly this structure (no markdown, no extra keys):
+{{
+  "ranked_findings": [
+    {{
+      "title": "finding title",
+      "description": "what the problem is",
+      "severity": "critical" | "high" | "medium" | "low",
+      "line_hint": "line number if known (omit if not)",
+      "suggestion": "concrete fix",
+      "rank": 1,
+      "category": "security" | "performance" | "style",
+      "rationale": "why this rank was assigned"
+    }}
+  ],
+  "ranking_notes": "brief explanation of the ranking strategy applied"
+}}`;
 
 const prompt = ChatPromptTemplate.fromMessages([
   ["system", SYSTEM],
   ["human", HUMAN],
 ]);
 
-function formatFindings(review: ReviewOutput, category: string): string {
+const parser = new JsonOutputParser<RankerOutput>();
+
+function formatFindings(review: ReviewOutput): string {
   if (review.findings.length === 0) return "No findings.";
   return review.findings
     .map(
@@ -54,11 +74,11 @@ export async function runRanker(
   performance: ReviewOutput,
   style: ReviewOutput
 ): Promise<RankerOutput> {
-  const structured = llm.withStructuredOutput(RankerOutputSchema);
-  const chain = prompt.pipe(structured);
-  return chain.invoke({
-    security_findings: formatFindings(security, "security"),
-    performance_findings: formatFindings(performance, "performance"),
-    style_findings: formatFindings(style, "style"),
-  }) as Promise<RankerOutput>;
+  const chain = prompt.pipe(llm).pipe(parser);
+  const raw = await chain.invoke({
+    security_findings: formatFindings(security),
+    performance_findings: formatFindings(performance),
+    style_findings: formatFindings(style),
+  });
+  return RankerOutputSchema.parse(raw);
 }

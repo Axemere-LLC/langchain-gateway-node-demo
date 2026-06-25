@@ -12,21 +12,31 @@ export const WORKLOAD_SYNTHESIZER = "code-review-synthesizer";
 
 // [AXEMERE] Provider + model assignment per agent
 // Different review dimensions benefit from different model strengths:
-//   - Security:    Anthropic claude-3-5-sonnet — strong at nuanced reasoning and attack surface analysis
-//   - Performance: OpenAI gpt-4o — good at algorithmic analysis and complexity tradeoffs
-//   - Style:       Gemini gemini-2.5-flash — fast and cost-effective for linting-style checks
+//   - Security:    OpenAI gpt-4o — strong reasoning for vulnerability analysis
+//   - Performance: OpenAI gpt-4o-mini — cost-effective for pattern recognition
+//   - Style:       Groq llama-3.3-70b-versatile — fast, third provider for diversity
 //   - Ranker:      OpenAI gpt-4o-mini — lightweight cross-finding prioritization
-//   - Synthesizer: Anthropic claude-3-5-haiku — concise narrative at low cost
+//   - Synthesizer: Groq llama-3.3-70b-versatile — concise narrative at low cost
+//
+// Intended production mapping (requires managed gateway or self-hosted with all providers):
+//   - Security:    anthropic / claude-3-5-sonnet-20241022
+//   - Style:       gemini / gemini-2.5-flash
+//   - Synthesizer: anthropic / claude-3-5-haiku-20241022
+// Note: The TypeScript SDK sends OpenAI-format messages to all providers.
+//   Gemini requires message format translation not yet in the TypeScript SDK v0.1.6
+//   (the Python SDK handles this in ChatAiGateway). Use OpenAI-compatible providers
+//   (openai, groq, deepseek, together, etc.) until the TypeScript SDK adds format translation.
+//
 // Alternatives:
 //   A) Route all agents to a single provider — simpler ops, but no per-dimension optimization
 //   B) Let the gateway policy engine decide routing — use provider: undefined + a routing policy
 // Docs: https://axemere.ai/docs/routing
 export const AGENT_CONFIGS = {
-  security: { provider: "anthropic", model: "claude-3-5-sonnet-20241022" },
-  performance: { provider: "openai", model: "gpt-4o" },
-  style: { provider: "google", model: "gemini-2.5-flash" },
+  security: { provider: "openai", model: "gpt-4o" },
+  performance: { provider: "openai", model: "gpt-4o-mini" },
+  style: { provider: "groq", model: "llama-3.3-70b-versatile" },
   ranker: { provider: "openai", model: "gpt-4o-mini" },
-  synthesizer: { provider: "anthropic", model: "claude-3-5-haiku-20241022" },
+  synthesizer: { provider: "groq", model: "llama-3.3-70b-versatile" },
 } as const;
 
 export type AgentName = keyof typeof AGENT_CONFIGS;

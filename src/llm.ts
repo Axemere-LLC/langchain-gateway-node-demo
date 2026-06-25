@@ -24,6 +24,7 @@ export interface ChatAiGatewayParams extends BaseChatModelParams {
   model: string;
   workloadId: string;
   labels?: Record<string, string>;
+  maxTokens?: number;
 }
 
 export class ChatAiGateway extends BaseChatModel {
@@ -32,6 +33,7 @@ export class ChatAiGateway extends BaseChatModel {
   private model_: string;
   private workloadId: string;
   private labels: Record<string, string>;
+  private maxTokens: number;
 
   // Side-channel metering: populated after each _generate() call.
   // Safe because each agent owns its own ChatAiGateway instance (no concurrent sharing).
@@ -47,6 +49,7 @@ export class ChatAiGateway extends BaseChatModel {
     this.model_ = params.model;
     this.workloadId = params.workloadId;
     this.labels = params.labels ?? {};
+    this.maxTokens = params.maxTokens ?? 4096;
   }
 
   _llmType(): string {
@@ -69,6 +72,7 @@ export class ChatAiGateway extends BaseChatModel {
       model: this.model_,
       workload_id: this.workloadId,
       labels: this.labels,
+      max_tokens: this.maxTokens,
     });
 
     this.lastMetering = response.metering;

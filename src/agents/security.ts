@@ -1,4 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { ChatAiGateway } from "../llm.js";
 import { ReviewOutputSchema, type ReviewOutput } from "../types.js";
 
@@ -24,23 +25,39 @@ const HUMAN = `Review the following code for security vulnerabilities:
 {code}
 \`\`\`
 
-Return your findings in the required structured format.`;
+Respond with a JSON object matching exactly this structure (no markdown, no extra keys):
+{{
+  "findings": [
+    {{
+      "title": "short issue name",
+      "description": "what the problem is and why it matters",
+      "severity": "critical" | "high" | "medium" | "low",
+      "line_hint": "line number or range, e.g. '12' or '12-15' (omit if unknown)",
+      "suggestion": "concrete fix or improvement"
+    }}
+  ],
+  "summary": "one-paragraph overview of this security review"
+}}`;
 
 const prompt = ChatPromptTemplate.fromMessages([
   ["system", SYSTEM],
   ["human", HUMAN],
 ]);
 
+// [AXEMERE] Structured output via JsonOutputParser + Zod
+// We use JsonOutputParser (text → JSON) then Zod validation rather than
+// withStructuredOutput() because withStructuredOutput() requires bindTools(),
+// which is provider-specific. This approach works with any text-generating
+// model routed through the gateway — the format instructions in the human
+// message tell the model exactly what JSON to produce.
+// Docs: https://axemere.ai/docs/sdk/typescript
+const parser = new JsonOutputParser<ReviewOutput>();
+
 export async function runSecurityReview(
   llm: ChatAiGateway,
   code: string
 ): Promise<ReviewOutput> {
-  // [AXEMERE] withStructuredOutput + Zod
-  // LangChain uses the Zod schema to instruct the model to return JSON
-  // matching the schema, then validates and parses it. The underlying
-  // gateway call still flows through ChatAiGateway._generate() so metering
-  // is captured on llm.lastMetering after this call returns.
-  const structured = llm.withStructuredOutput(ReviewOutputSchema);
-  const chain = prompt.pipe(structured);
-  return chain.invoke({ code }) as Promise<ReviewOutput>;
+  const chain = prompt.pipe(llm).pipe(parser);
+  const raw = await chain.invoke({ code });
+  return ReviewOutputSchema.parse(raw);
 }

@@ -1,4 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { ChatAiGateway } from "../llm.js";
 import { SynthesisOutputSchema, type SynthesisOutput, type RankerOutput } from "../types.js";
 
@@ -16,15 +17,24 @@ const HUMAN = `Synthesize the following prioritized code review findings into an
 ## Ranking notes from the ranker
 {ranking_notes}
 
-Produce:
-1. A 2-3 sentence executive summary for a tech lead
-2. An ordered list of concrete action items (most critical first)
-3. An overall risk assessment`;
+Respond with a JSON object matching exactly this structure (no markdown, no extra keys):
+{{
+  "executive_summary": "2-3 sentence overview for a tech lead",
+  "action_items": [
+    {{
+      "priority": "critical" | "high" | "medium" | "low",
+      "action": "concrete action to take"
+    }}
+  ],
+  "risk_assessment": "overall risk level and rationale"
+}}`;
 
 const prompt = ChatPromptTemplate.fromMessages([
   ["system", SYSTEM],
   ["human", HUMAN],
 ]);
+
+const parser = new JsonOutputParser<SynthesisOutput>();
 
 function formatRankedFindings(output: RankerOutput): string {
   return output.ranked_findings
@@ -39,10 +49,10 @@ export async function runSynthesizer(
   llm: ChatAiGateway,
   ranked: RankerOutput
 ): Promise<SynthesisOutput> {
-  const structured = llm.withStructuredOutput(SynthesisOutputSchema);
-  const chain = prompt.pipe(structured);
-  return chain.invoke({
+  const chain = prompt.pipe(llm).pipe(parser);
+  const raw = await chain.invoke({
     ranked_findings: formatRankedFindings(ranked),
     ranking_notes: ranked.ranking_notes,
-  }) as Promise<SynthesisOutput>;
+  });
+  return SynthesisOutputSchema.parse(raw);
 }

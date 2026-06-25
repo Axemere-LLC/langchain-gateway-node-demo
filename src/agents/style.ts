@@ -1,4 +1,5 @@
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { ChatAiGateway } from "../llm.js";
 import { ReviewOutputSchema, type ReviewOutput } from "../types.js";
 
@@ -26,18 +27,32 @@ const HUMAN = `Review the following code for style and maintainability issues:
 {code}
 \`\`\`
 
-Return your findings in the required structured format.`;
+Respond with a JSON object matching exactly this structure (no markdown, no extra keys):
+{{
+  "findings": [
+    {{
+      "title": "short issue name",
+      "description": "what the problem is and why it matters",
+      "severity": "critical" | "high" | "medium" | "low",
+      "line_hint": "line number or range, e.g. '12' or '12-15' (omit if unknown)",
+      "suggestion": "concrete fix or improvement"
+    }}
+  ],
+  "summary": "one-paragraph overview of this style review"
+}}`;
 
 const prompt = ChatPromptTemplate.fromMessages([
   ["system", SYSTEM],
   ["human", HUMAN],
 ]);
 
+const parser = new JsonOutputParser<ReviewOutput>();
+
 export async function runStyleReview(
   llm: ChatAiGateway,
   code: string
 ): Promise<ReviewOutput> {
-  const structured = llm.withStructuredOutput(ReviewOutputSchema);
-  const chain = prompt.pipe(structured);
-  return chain.invoke({ code }) as Promise<ReviewOutput>;
+  const chain = prompt.pipe(llm).pipe(parser);
+  const raw = await chain.invoke({ code });
+  return ReviewOutputSchema.parse(raw);
 }
