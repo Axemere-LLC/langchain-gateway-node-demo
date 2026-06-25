@@ -152,7 +152,7 @@ Copy `.env.example` to `.env` and fill in values before running the pipeline.
 |----------|----------|---------|-------------|
 | `AXEMERE_GATEWAY_TOKEN` | Yes | — | Your gateway token from [console.axemere.ai](https://console.axemere.ai) |
 | `AXEMERE_PROJECT_ID` | Yes | — | Your [project ID](glossary.md#project-id) for workload attribution |
-| `AXEMERE_GATEWAY_URL` | Yes | — | Gateway base URL. See Known Limitations below. |
+| `AXEMERE_GATEWAY_URL` | No | `http://localhost:7080` | Gateway base URL. Omit for local Docker gateway; set to `https://us.gw.axemere.ai` for the managed cloud gateway. |
 | `AXEMERE_PROVIDER` | No | — | Optional default provider override |
 | `AXEMERE_MODEL` | No | — | Optional default model override |
 
@@ -172,10 +172,6 @@ AXEMERE_GATEWAY_URL=http://localhost:7080
 
 ## Known Limitations
 
-### AXEMERE_GATEWAY_URL is required by @axemere/gateway
-
-`AiGatewayConfig` (in `@axemere/gateway`) throws if `AXEMERE_GATEWAY_URL` is not set. LangChain.js has no concept of a gateway URL — this is purely an Axemere SDK requirement. Always set it explicitly. The cloud endpoint is `https://us.gw.axemere.ai`; for a local Docker gateway use `http://localhost:7080`. This differs from the Python SDK (`axemere-gateway`), which defaults to `localhost:7080` when the variable is absent.
-
 ### max_tokens must be set per request
 
 Anthropic requires `max_tokens` in every completion request. The TypeScript SDK v0.1.6 has no built-in default. `ChatAiGateway` defaults to `4096` if `maxTokens` is not passed to the constructor, but callers should set it explicitly for each agent based on expected output size.
@@ -190,7 +186,7 @@ The intended production mapping for the StyleReviewer (`gemini` / `gemini-2.5-fl
 
 | Behavior | TypeScript SDK v0.1.6 | Python SDK |
 |----------|----------------------|------------|
-| Default gateway URL | None — throws if not set | `localhost:7080` |
+| Default gateway URL | `localhost:7080` | `localhost:7080` |
 | Gemini message format translation | Not supported | Supported in `ChatAiGateway` |
 | `max_tokens` default | None — must be set explicitly | Provider-specific defaults apply |
 | Metering location | Response body (`response.metering`) | Response body (same) |
