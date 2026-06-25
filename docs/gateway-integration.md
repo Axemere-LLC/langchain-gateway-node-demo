@@ -172,9 +172,9 @@ AXEMERE_GATEWAY_URL=http://localhost:7080
 
 ## Known Limitations
 
-### AXEMERE_GATEWAY_URL is required
+### AXEMERE_GATEWAY_URL is required by @axemere/gateway
 
-The TypeScript SDK v0.1.6 throws if `AXEMERE_GATEWAY_URL` is not set. Always set it explicitly. The cloud endpoint is `https://us.gw.axemere.ai`; for a local Docker gateway use `http://localhost:7080`. This differs from the Python SDK, which defaults to `localhost:7080` when the variable is absent (convenient for local development without a `.env` entry).
+`AiGatewayConfig` (in `@axemere/gateway`) throws if `AXEMERE_GATEWAY_URL` is not set. LangChain.js has no concept of a gateway URL — this is purely an Axemere SDK requirement. Always set it explicitly. The cloud endpoint is `https://us.gw.axemere.ai`; for a local Docker gateway use `http://localhost:7080`. This differs from the Python SDK (`axemere-gateway`), which defaults to `localhost:7080` when the variable is absent.
 
 ### max_tokens must be set per request
 
