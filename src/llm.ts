@@ -24,6 +24,8 @@ export interface ChatAiGatewayParams extends BaseChatModelParams {
   model: string;
   workloadId: string;
   labels?: Record<string, string>;
+  // Optional: override the SDK's default of 256. Code review agents need 1024–4096
+  // to avoid truncated JSON mid-output. See AGENT_CONFIGS in config.ts for per-agent values.
   maxTokens?: number;
 }
 
@@ -33,7 +35,7 @@ export class ChatAiGateway extends BaseChatModel {
   private model_: string;
   private workloadId: string;
   private labels: Record<string, string>;
-  private maxTokens: number;
+  private maxTokens: number | undefined;
 
   // Side-channel metering: populated after each _generate() call.
   // Safe because each agent owns its own ChatAiGateway instance (no concurrent sharing).
@@ -49,7 +51,7 @@ export class ChatAiGateway extends BaseChatModel {
     this.model_ = params.model;
     this.workloadId = params.workloadId;
     this.labels = params.labels ?? {};
-    this.maxTokens = params.maxTokens ?? 4096;
+    this.maxTokens = params.maxTokens;
   }
 
   _llmType(): string {
@@ -66,13 +68,17 @@ export class ChatAiGateway extends BaseChatModel {
       content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
     }));
 
+    // [AXEMERE] max_tokens: SDK defaults to 256 when omitted (Anthropic requires the field).
+    // 256 is intentionally conservative — callers producing long output (e.g. code reviews
+    // with multiple findings) should pass maxTokens in ChatAiGatewayParams. Per-agent budgets
+    // are defined in AGENT_CONFIGS in config.ts; pass undefined here to use the SDK default.
     const response = await this.client.execute({
       messages: gatewayMessages,
       provider: this.provider,
       model: this.model_,
       workload_id: this.workloadId,
       labels: this.labels,
-      max_tokens: this.maxTokens,
+      ...(this.maxTokens !== undefined && { max_tokens: this.maxTokens }),
     });
 
     this.lastMetering = response.metering;

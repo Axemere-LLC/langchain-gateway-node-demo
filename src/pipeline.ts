@@ -22,12 +22,13 @@ function buildLLM(
   workloadId: string,
   runId: string
 ): ChatAiGateway {
-  const { provider, model } = AGENT_CONFIGS[agentName];
+  const { provider, model, maxTokens } = AGENT_CONFIGS[agentName];
   return new ChatAiGateway({
     config,
     provider,
     model,
     workloadId,
+    maxTokens,
     // [AXEMERE] Run-level label
     // Every gateway record from this pipeline run shares the same run_id label,
     // making the full run queryable in the Axemere console or API:

@@ -28,7 +28,7 @@ The Axemere [Gateway](glossary.md#gateway) is a managed or self-hosted proxy tha
 
 ## Integration Paths
 
-The TypeScript SDK (`@axemere/gateway` v0.1.6) supports two integration patterns.
+The TypeScript SDK (`@axemere/gateway` v0.1.8) supports two integration patterns.
 
 ### Explicit Mode — ChatAiGateway
 
@@ -101,7 +101,7 @@ No custom class is needed. The gateway intercepts the request, records it, and f
 | `model` | `string` | Model identifier within that provider |
 | `workload_id` | `string` | [Workload ID](glossary.md#workload-id) for this call |
 | `labels` | `Record<string, string>` | Arbitrary key-value labels attached to the gateway record |
-| `max_tokens` | `number` | Maximum completion tokens (required — see [Known Limitations](#known-limitations)) |
+| `max_tokens` | `number` | Maximum completion tokens (optional — defaults to `256` if omitted) |
 
 **Response fields:**
 
@@ -172,10 +172,6 @@ AXEMERE_GATEWAY_URL=http://localhost:7080
 
 ## Known Limitations
 
-### max_tokens must be set per request
-
-Anthropic requires `max_tokens` in every completion request. The TypeScript SDK v0.1.6 has no built-in default. `ChatAiGateway` defaults to `4096` if `maxTokens` is not passed to the constructor, but callers should set it explicitly for each agent based on expected output size.
-
 ### Gemini requires a different message format
 
 The TypeScript SDK v0.1.6 sends OpenAI-format `messages` arrays to all providers. Gemini's API uses a different format (`contents` / `generationConfig`). Until the TypeScript SDK adds format translation, use OpenAI-compatible providers: `openai`, `groq`, `deepseek`, `together`, etc.
@@ -184,11 +180,11 @@ The intended production mapping for the StyleReviewer (`gemini` / `gemini-2.5-fl
 
 ## Comparison to the Python SDK
 
-| Behavior | TypeScript SDK v0.1.6 | Python SDK |
+| Behavior | TypeScript SDK v0.1.8 | Python SDK |
 |----------|----------------------|------------|
 | Default gateway URL | `localhost:7080` | `localhost:7080` |
 | Gemini message format translation | Not supported | Supported in `ChatAiGateway` |
-| `max_tokens` default | None — must be set explicitly | Provider-specific defaults apply |
+| `max_tokens` default | `256` (SDK default as of v0.1.8) | `256` (SDK default) |
 | Metering location | Response body (`response.metering`) | Response body (same) |
 | LangChain integration | Custom `BaseChatModel` subclass | Custom `BaseChatModel` subclass |
 | Structured output strategy | `JsonOutputParser` + Zod | `JsonOutputParser` + Pydantic |
