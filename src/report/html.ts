@@ -167,10 +167,6 @@ export function renderReport(result: PipelineResult): string {
       <div class="meta-value" style="color:var(--low)">${lowCount}</div>
     </div>
     <div class="meta-card">
-      <div class="meta-label">Total Cost</div>
-      <div class="meta-value green">$${parseFloat(result.total_cost_usd).toFixed(4)}</div>
-    </div>
-    <div class="meta-card">
       <div class="meta-label">Tokens In</div>
       <div class="meta-value">${result.total_tokens_in.toLocaleString()}</div>
     </div>
@@ -181,6 +177,10 @@ export function renderReport(result: PipelineResult): string {
     <div class="meta-card">
       <div class="meta-label">Agent Calls</div>
       <div class="meta-value">${result.metering.length}</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Total Cost</div>
+      <div class="meta-value green">$${parseFloat(result.total_cost_usd).toFixed(4)}</div>
     </div>
   </div>
 
