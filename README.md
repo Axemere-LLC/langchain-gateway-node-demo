@@ -26,7 +26,7 @@ Five LangChain.js agents run in a coordinated pipeline against any source file:
 
 All calls are routed through the Axemere Gateway, which records every invocation with token counts, cost, latency, and a `run_id` label that ties all five records from one run together for filtering in the console or API.
 
-**Live run result:** `examples/sample-vulnerable.ts` produced 19 raw findings across 3 dimensions, 12 ranked (3 critical, 3 high), total cost $0.02, wall-clock time 31s.
+**[Live example report →](https://axemere-llc.github.io/langchain-gateway-node-demo/examples/sample-vulnerable/report.html)** — `examples/sample-vulnerable.ts` reviewed by all five agents: 14 ranked findings (3 critical, 3 high), total cost $0.016, wall-clock 37.9s. The run ID in the report header links directly to the Axemere console filtered to that run's gateway records.
 
 ## Architecture
 
@@ -107,3 +107,4 @@ The HTML report contains:
 | [docs/agents.md](docs/agents.md) | Each agent's purpose, model, workload ID, prompt strategy, and output schema |
 | [docs/gateway-integration.md](docs/gateway-integration.md) | Gateway integration patterns, environment variables, known limitations |
 | [docs/glossary.md](docs/glossary.md) | Domain term definitions |
+| [examples/sample-vulnerable/README.md](examples/sample-vulnerable/README.md) | Pre-generated example report and run details |

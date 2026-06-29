@@ -12,6 +12,7 @@ Related: [architecture.md](architecture.md) | [glossary.md](glossary.md)
   - [Proxy Mode — ChatOpenAI](#proxy-mode--chatopenai)
   - [Comparison](#comparison)
 - [How AiGatewayClient.execute() Works](#how-aigatewayclientexecute-works)
+- [Console Deep-Link Pattern](#console-deep-link-pattern)
 - [Metering](#metering)
 - [Environment Variables](#environment-variables)
 - [Known Limitations](#known-limitations)
@@ -112,6 +113,18 @@ No custom class is needed. The gateway intercepts the request, records it, and f
 | `metering` | `Metering` | Token counts and cost — see [Metering](#metering) below |
 | `provider` | `string` | Actual provider used (may differ if the gateway applied routing policy) |
 | `model` | `string` | Actual model used |
+
+## Console Deep-Link Pattern
+
+Every gateway record is tagged with the labels passed to `execute()`. The Axemere console Records page accepts `label_key` and `label_value` query parameters to pre-filter the view:
+
+```
+https://console.axemere.ai/records?label_key=run_id&label_value=a4ac8aa1
+```
+
+This demo uses `run_id` as the label key, but the pattern works for any label you define — `environment`, `customer_id`, `feature_flag`, etc. The HTML report links the run ID in its header directly to this URL, so readers can jump from the report to the full gateway trace in one click.
+
+See the [example report](https://axemere-llc.github.io/langchain-gateway-node-demo/examples/sample-vulnerable/report.html) for a live demonstration.
 
 ## Metering
 

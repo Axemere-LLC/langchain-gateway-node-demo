@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Review Report — Run a4ac8aa1</title>
+  <style>
+    :root {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a; --border: #2e3350;
+      --text: #e2e8f0; --text-muted: #8892a4;
+      --accent: #6c8ef7; --green: #34d399;
+      --crit: #f87171; --high: #fb923c; --med: #fbbf24; --low: #94a3b8;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: var(--bg); color: var(--text); }
+    .container { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+    h1 { font-size: 28px; margin-bottom: 4px; }
+    h2 { font-size: 18px; font-weight: 700; margin: 32px 0 12px; border-bottom: 2px solid var(--border); padding-bottom: 8px; color: var(--text); }
+    .card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .meta-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .meta-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 4px; }
+    .meta-value { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+    .meta-value.accent { color: var(--accent); font-family: monospace; font-size: .95rem; }
+    .meta-value.green  { color: var(--green); }
+    .meta-value.crit   { color: var(--crit); }
+    .meta-value.high   { color: var(--high); }
+    .meta-value.med    { color: var(--med); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: var(--surface2); padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); border-bottom: 2px solid var(--border); }
+    td { color: var(--text); }
+    tr:not(:last-child) td { border-bottom: 1px solid var(--border); }
+    .action-table { width: 100%; border-collapse: collapse; }
+    .action-table td { padding: 10px 12px; vertical-align: middle; border-bottom: 1px solid var(--border); }
+    .action-table td:first-child { white-space: nowrap; width: 90px; }
+    footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border); }
+    footer a { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Code Review Report</h1>
+  <div style="color:var(--text-muted);margin-bottom:24px">
+    <a href="https://console.axemere.ai/records?label_key=run_id&label_value=a4ac8aa1" target="_blank" rel="noopener" style="color:var(--accent)"><code>a4ac8aa1</code></a>
+    &nbsp;·&nbsp; June 26, 2026 at 11:38 AM &nbsp;·&nbsp; 37.9s total
+  </div>
+
+  <!-- Dashboard -->
+  <div class="meta-grid">
+    <div class="meta-card">
+      <div class="meta-label">Total Findings</div>
+      <div class="meta-value">14</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Critical</div>
+      <div class="meta-value crit">3</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">High</div>
+      <div class="meta-value high">3</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Medium</div>
+      <div class="meta-value med">8</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Low</div>
+      <div class="meta-value" style="color:var(--low)">0</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Tokens In</div>
+      <div class="meta-value">5,442</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Tokens Out</div>
+      <div class="meta-value">4,073</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Agent Calls</div>
+      <div class="meta-value">5</div>
+    </div>
+    <div class="meta-card">
+      <div class="meta-label">Total Cost</div>
+      <div class="meta-value green">$0.0157</div>
+    </div>
+  </div>
+
+  <!-- Executive Summary -->
+  <h2>Executive Summary</h2>
+  <div class="card">
+    <p style="line-height:1.7;margin:0 0 16px;color:var(--text)">This code review has identified several critical security vulnerabilities, including SQL injection and command injection, which require immediate attention to prevent potential data breaches and system compromises. Additionally, high-priority performance issues, such as inefficient concatenation and N+1 query patterns, need to be addressed to ensure the application's responsiveness and scalability. Prompt action is necessary to mitigate these risks and improve the overall quality of the code.</p>
+    <div style="background:rgba(251,191,36,0.1);border-left:3px solid #fbbf24;padding:12px 16px;border-radius:0 6px 6px 0">
+      <strong style="color:#fbbf24">Risk assessment:</strong> <span style="color:var(--text)">The overall risk level is critical due to the presence of SQL injection and command injection vulnerabilities, which can lead to severe data breaches and system compromises. The high-priority performance issues can cause significant degradation in application responsiveness and scalability. Prompt action is necessary to mitigate these risks and improve the overall quality of the code.</span>
+    </div>
+  </div>
+
+  <!-- Action Plan -->
+  <h2>Action Plan</h2>
+  <div class="card" style="padding:0;overflow:auto">
+    <table class="action-table">
+      <thead><tr>
+        <th>Severity</th>
+        <th>Action</th>
+      </tr></thead>
+      <tbody><tr><td><span style="background:#fef2f2;color:#b91c1c;border:1px solid #b91c1c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">critical</span></td><td style="color:var(--text);line-height:1.5">Fix SQL injection vulnerability by using parameterized queries or ORM methods</td></tr><tr><td><span style="background:#fef2f2;color:#b91c1c;border:1px solid #b91c1c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">critical</span></td><td style="color:var(--text);line-height:1.5">Fix command injection vulnerability by validating filenames or using a library for safe file operations</td></tr><tr><td><span style="background:#fef2f2;color:#b91c1c;border:1px solid #b91c1c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">critical</span></td><td style="color:var(--text);line-height:1.5">Address command injection vulnerability in 'execSync' by using a safer alternative and sanitizing user input</td></tr><tr><td><span style="background:#fff7ed;color:#c2410c;border:1px solid #c2410c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">high</span></td><td style="color:var(--text);line-height:1.5">Remove hardcoded database password and use environment variables or a secrets management tool</td></tr><tr><td><span style="background:#fff7ed;color:#c2410c;border:1px solid #c2410c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">high</span></td><td style="color:var(--text);line-height:1.5">Optimize the flatten function to improve performance by reducing complexity from O(n²) to O(n)</td></tr><tr><td><span style="background:#fff7ed;color:#c2410c;border:1px solid #c2410c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">high</span></td><td style="color:var(--text);line-height:1.5">Implement a single query with a JOIN operation or IN clause to fetch all users and their orders</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Replace readFileSync with fs.promises.readFile() to prevent blocking I/O operations</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Improve cache handling by removing specific keys for deleted users instead of clearing the entire cache</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Define a more specific type for the 'role' property in the User interface</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Properly handle errors by logging or throwing them with meaningful error messages</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Replace recursive function with an iterative approach or implement a maximum recursion depth limit</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Add type annotations for function parameters to ensure type safety and facilitate code maintenance</td></tr><tr><td><span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span></td><td style="color:var(--text);line-height:1.5">Break down the 'processUserRequest' function into smaller, more focused functions</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- Ranked Findings -->
+  <h2>All Findings — Ranked by Priority</h2>
+  <div style="color:var(--text-muted);font-size:13px;margin-bottom:12px">Findings were ranked based on a combination of security risks, performance impact, and code style, following the established principles of prioritization.</div>
+  
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#1</span>
+      <span style="background:#fef2f2;color:#b91c1c;border:1px solid #b91c1c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">critical</span>
+      <span style="background:#7c3aed18;color:#7c3aed;border:1px solid #7c3aed40;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">security</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 16</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">SQL Injection Vulnerability</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">User input is directly concatenated into a SQL query, making the application vulnerable to SQL injection attacks.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use parameterized queries or ORM methods to safely inject variables into queries without constructing raw SQL strings.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: This finding is ranked highest because it has a direct exploit path and can lead to severe data breaches.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#2</span>
+      <span style="background:#fef2f2;color:#b91c1c;border:1px solid #b91c1c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">critical</span>
+      <span style="background:#7c3aed18;color:#7c3aed;border:1px solid #7c3aed40;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">security</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 21</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Command Injection Vulnerability</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">User input is unsafely included in a shell command execution, which could allow an attacker to perform arbitrary command execution.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Validate the filename rigorously or use a library designed to safely handle file operations without shell execution.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Also a critical security vulnerability with a direct exploit path that can cause significant harm.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#3</span>
+      <span style="background:#fff7ed;color:#c2410c;border:1px solid #c2410c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">high</span>
+      <span style="background:#7c3aed18;color:#7c3aed;border:1px solid #7c3aed40;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">security</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 7</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Hardcoded Database Password</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The database password is hardcoded in the source code, which is insecure as it exposes sensitive credentials that should be protected.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use environment variables or a secrets management tool to manage sensitive information like database passwords.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Though not as severe as injection vulnerabilities, exposing credentials can lead to serious security incidents.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#4</span>
+      <span style="background:#fff7ed;color:#c2410c;border:1px solid #c2410c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">high</span>
+      <span style="background:#0369a118;color:#0369a1;border:1px solid #0369a140;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">performance</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 23-26</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Inefficient Concatenation in Flatten Function</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The use of result.concat() inside a loop in the flatten function leads to O(n²) complexity due to repeated array resizing and copying, significantly impacting performance for large nested arrays.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use a single iteration with Array.prototype.push.apply(), or a flatMap approach to improve the complexity to O(n).</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: A high severity performance issue that can cause noticeable slowdowns in response times.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#5</span>
+      <span style="background:#fff7ed;color:#c2410c;border:1px solid #c2410c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">high</span>
+      <span style="background:#0369a118;color:#0369a1;border:1px solid #0369a140;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">performance</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 10-15</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">N+1 Query Pattern</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The function getUsersWithOrders executes one query for each user ID in userIds, leading to a performance bottleneck as the number of users grows.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use a single query with a JOIN operation or utilize IN clause to fetch all users and their orders in one call.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: This issue can lead to severe performance degradation as user input increases, affecting system responsiveness.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#6</span>
+      <span style="background:#fef2f2;color:#b91c1c;border:1px solid #b91c1c;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">critical</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 23</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Command Injection Vulnerability</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">Using 'execSync' with user-provided input allows attackers to execute arbitrary system commands, potentially leading to system compromise.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use a safer alternative, such as 'fs.readFileSync', and ensure that user input is properly sanitized and validated.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Even though it's listed in style, it holds a high risk akin to command injections, warranting a critical response.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#7</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#0369a118;color:#0369a1;border:1px solid #0369a140;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">performance</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 32</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Blocking I/O in readConfig Function</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">readFileSync is a blocking I/O operation, which can lead to performance degradation if the file read takes time, thereby stalling the event loop.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use fs.promises.readFile() to read the file asynchronously, allowing the event loop to remain responsive.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Medium severity but still can impact overall application responsiveness during high traffic.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#8</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#0369a118;color:#0369a1;border:1px solid #0369a140;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">performance</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 36-43</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Cache Handling in processUserRequest</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The cache.clear() operation on user deletion invalidates the entire cache, which can lead to unnecessary recomputation and database queries.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Instead of clearing the entire cache, consider removing the specific key for the deleted user to improve cache hit rates.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: This can cause performance issues over time without addressing user-specific operations.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#9</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 9</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Weak typing</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">Using 'any' for the 'role' property in the User interface undermines type safety and can lead to type-related errors at runtime.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Define a more specific type for the 'role' property, such as an enum or a class.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Contributes to code quality but less impactful than performance or security issues.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#10</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 39-41</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Swallowed error</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">Silently returning an empty object in case of an error can mask issues and make debugging more difficult.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Properly handle errors by logging or throwing them, and provide a meaningful error message to facilitate debugging.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Impacts maintainability but does not have direct effects on security or performance.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#11</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 28-33</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Unbounded recursion</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The 'flatten' function can cause a stack overflow error if the input array contains deeply nested arrays, due to the recursive nature of the function.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use an iterative approach instead of recursion, or implement a maximum recursion depth limit to prevent stack overflow errors.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Potential for failure under certain conditions, impacting reliability.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#12</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 43</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">Missing type annotations</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The 'db', 'logger', and 'cache' parameters in the 'processUserRequest' function are missing type annotations, which can lead to type-related errors at runtime.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Add type annotations for these parameters to ensure type safety and facilitate code maintenance.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: Less critical but still important for code clarity and maintainability.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#13</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 43-56</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">God function</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">The 'processUserRequest' function performs multiple unrelated tasks and has a complex logic flow, making it difficult to understand and maintain.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Break down the function into smaller, more focused functions, each responsible for a single task or logical operation.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: While impacting maintainability, it does not pose immediate risks to performance or security.</div>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px;background:var(--surface)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:18px;font-weight:800;color:var(--text-muted);min-width:28px">#14</span>
+      <span style="background:#fffbeb;color:#b45309;border:1px solid #b45309;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">medium</span>
+      <span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span>
+      <span style="font-size:12px;color:var(--text-muted)">line 14-18</span>
+    </div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;color:var(--text)">N+1 query pattern</div>
+    <div style="color:var(--text-muted);margin-bottom:10px;line-height:1.5">Executing a separate database query for each user ID can result in significant performance degradation and increased load on the database.</div>
+    <div style="background:rgba(52,211,153,0.08);border-left:3px solid #34d399;padding:10px 14px;border-radius:0 6px 6px 0">
+      <span style="font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase">Suggestion</span>
+      <div style="margin-top:4px;color:var(--text-muted)">Use a single query that retrieves data for all user IDs at once, or implement pagination and caching to reduce the number of queries.</div>
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text-muted);font-style:italic">Ranking rationale: This ranks lower as it primarily impacts performance but is less critical than other findings.</div>
+  </div>
+
+  <!-- Per-dimension summaries -->
+  <h2>Review Dimension Summaries</h2>
+  <div class="card">
+    <div style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:4px"><span style="background:#7c3aed18;color:#7c3aed;border:1px solid #7c3aed40;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">security</span> Security</div>
+      <div style="color:var(--text-muted);line-height:1.6">This code contains several critical security vulnerabilities, including hardcoded credentials, SQL injection, and command injection, each of which poses significant risks if exploited. Immediate action should be taken to refactor the code to avoid direct handling of sensitive information in the source code and to use safer alternatives for executing SQL queries and system commands. Security hygiene improvements, such as input validation and proper error handling, should also be implemented to enhance the overall robustness of the application against potential threats.</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:4px"><span style="background:#0369a118;color:#0369a1;border:1px solid #0369a140;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">performance</span> Performance</div>
+      <div style="color:var(--text-muted);line-height:1.6">The code review highlighted significant performance concerns related to N+1 query patterns causing excessive database calls, inefficient concatenation leading to quadratic complexity, blocking I/O that can hinder responsiveness, and a poorly designed cache management strategy that affects efficiency. Addressing these issues will enhance the performance and scalability of the application.</div>
+    </div>
+    <div>
+      <div style="font-weight:700;margin-bottom:4px"><span style="background:#065f4618;color:#065f46;border:1px solid #065f4640;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:700;text-transform:uppercase">style</span> Style</div>
+      <div style="color:var(--text-muted);line-height:1.6">This code review has identified several critical security issues, including hardcoded secrets, SQL injection vulnerabilities, and command injection vulnerabilities. Additionally, there are several maintainability issues, such as weak typing, unbounded recursion, and swallowed errors. Addressing these issues will significantly improve the security and maintainability of the codebase.</div>
+    </div>
+  </div>
+
+  <!-- Metering -->
+  <h2>Gateway Metering — By Agent</h2>
+  <div class="card" style="padding:0;overflow:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Agent</th>
+          <th>Provider</th>
+          <th>Model</th>
+          <th style="text-align:right">Tokens in</th>
+          <th style="text-align:right">Tokens out</th>
+          <th style="text-align:right">Cost</th>
+          <th style="text-align:right">Latency</th>
+          <th>Record ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+  <tr>
+    <td style="padding:10px 14px;font-weight:600">security</td>
+    <td style="padding:10px 14px;color:#6b7280">openai</td>
+    <td style="padding:10px 14px;color:#6b7280;font-family:monospace;font-size:12px">gpt-4o-2024-08-06</td>
+    <td style="padding:10px 14px;text-align:right">783</td>
+    <td style="padding:10px 14px;text-align:right">349</td>
+    <td style="padding:10px 14px;text-align:right;font-family:monospace">$0.01141</td>
+    <td style="padding:10px 14px;text-align:right">7,482ms</td>
+    <td style="padding:10px 14px;font-family:monospace;font-size:10px;color:#9ca3af">rec_019f0502-afaf-7193-9291-9ebb5a276567</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;font-weight:600">performance</td>
+    <td style="padding:10px 14px;color:#6b7280">openai</td>
+    <td style="padding:10px 14px;color:#6b7280;font-family:monospace;font-size:12px">gpt-4o-mini-2024-07-18</td>
+    <td style="padding:10px 14px;text-align:right">787</td>
+    <td style="padding:10px 14px;text-align:right">497</td>
+    <td style="padding:10px 14px;text-align:right;font-family:monospace">$0.00042</td>
+    <td style="padding:10px 14px;text-align:right">7,482ms</td>
+    <td style="padding:10px 14px;font-family:monospace;font-size:10px;color:#9ca3af">rec_019f0502-bb63-793f-a626-b867750506da</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;font-weight:600">style</td>
+    <td style="padding:10px 14px;color:#6b7280">groq</td>
+    <td style="padding:10px 14px;color:#6b7280;font-family:monospace;font-size:12px">llama-3.3-70b-versatile</td>
+    <td style="padding:10px 14px;text-align:right">855</td>
+    <td style="padding:10px 14px;text-align:right">850</td>
+    <td style="padding:10px 14px;text-align:right;font-family:monospace">$0.00118</td>
+    <td style="padding:10px 14px;text-align:right">7,482ms</td>
+    <td style="padding:10px 14px;font-family:monospace;font-size:10px;color:#9ca3af">rec_019f0502-a89a-75d4-b962-d7c2810d9aba</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;font-weight:600">ranker</td>
+    <td style="padding:10px 14px;color:#6b7280">openai</td>
+    <td style="padding:10px 14px;color:#6b7280;font-family:monospace;font-size:12px">gpt-4o-mini-2024-07-18</td>
+    <td style="padding:10px 14px;text-align:right">1,501</td>
+    <td style="padding:10px 14px;text-align:right">1,785</td>
+    <td style="padding:10px 14px;text-align:right;font-family:monospace">$0.00130</td>
+    <td style="padding:10px 14px;text-align:right">28,784ms</td>
+    <td style="padding:10px 14px;font-family:monospace;font-size:10px;color:#9ca3af">rec_019f0503-2bd6-7d5c-9b6b-68b2ff5ebf34</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;font-weight:600">synthesizer</td>
+    <td style="padding:10px 14px;color:#6b7280">groq</td>
+    <td style="padding:10px 14px;color:#6b7280;font-family:monospace;font-size:12px">llama-3.3-70b-versatile</td>
+    <td style="padding:10px 14px;text-align:right">1,516</td>
+    <td style="padding:10px 14px;text-align:right">592</td>
+    <td style="padding:10px 14px;text-align:right;font-family:monospace">$0.00136</td>
+    <td style="padding:10px 14px;text-align:right">1,642ms</td>
+    <td style="padding:10px 14px;font-family:monospace;font-size:10px;color:#9ca3af">rec_019f0503-323e-727b-9f41-1c32695e85e5</td>
+  </tr>
+        <tr style="background:var(--surface2);font-weight:700">
+          <td colspan="3" style="padding:10px 14px">Total</td>
+          <td style="padding:10px 14px;text-align:right">5,442</td>
+          <td style="padding:10px 14px;text-align:right">4,073</td>
+          <td style="padding:10px 14px;text-align:right;font-family:monospace">$0.01566</td>
+          <td style="padding:10px 14px;text-align:right">37.9s</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    Generated by <a href="https://github.com/Axemere-LLC/langchain-gateway-node-demo" style="color:#6b7280">langchain-gateway-node-demo</a>
+    &nbsp;·&nbsp; Powered by <a href="https://axemere.ai" style="color:#6b7280">Axemere Gateway</a>
+    &nbsp;·&nbsp; <a href="https://console.axemere.ai/records?label_key=run_id&label_value=a4ac8aa1" target="_blank" rel="noopener" style="color:#6b7280">View run in Console</a>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -143,12 +143,16 @@ Every `ChatAiGateway` instance created for that run receives this ID as a gatewa
 labels: { run_id: runId, agent: agentName }
 ```
 
-This means all five gateway records produced by one pipeline run share the same `run_id` value. They can be retrieved together from the Axemere console or API:
+This means all five gateway records produced by one pipeline run share the same `run_id` value. They can be retrieved together in the Axemere console using the label filter:
 
 ```
-GET /v1/records?label.run_id=<run_id>
+https://console.axemere.ai/records?label_key=run_id&label_value=<run_id>
 ```
+
+The `label_key` / `label_value` query params work for any label you attach — `run_id` is just a convention used by this demo. The HTML report makes this concrete: the run ID in the report header is a direct link to the console pre-filtered to that run's records.
 
 The run ID also appears in every `console.log` line during the run, so logs and gateway records can be correlated without additional instrumentation.
+
+See the [example report](https://axemere-llc.github.io/langchain-gateway-node-demo/examples/sample-vulnerable/report.html) for a live demonstration of the run ID link.
 
 See [agents.md](agents.md) for the full list of workload IDs per agent.
