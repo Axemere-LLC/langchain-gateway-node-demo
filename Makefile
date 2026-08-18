@@ -20,13 +20,13 @@ lint: ## Run ESLint + TypeScript type check
 
 review: build ## Run the code review pipeline on FILE (default: examples/sample-vulnerable.ts)
 	@mkdir -p output
-	node dist/index.js $(FILE) --out output/report.html --json
-	@echo ""
-	@echo "Report: output/report.html"
+	node --env-file=.env dist/index.js $(FILE) --json
 
-report: ## Re-render HTML from last JSON result (no LLM calls)
-	@if [ ! -f output/report.json ]; then echo "No output/report.json found — run 'make review' first"; exit 1; fi
-	node -e "import('./dist/report/html.js').then(m => { const fs = require('fs'); const r = JSON.parse(fs.readFileSync('output/report.json','utf8')); fs.writeFileSync('output/report.html', m.renderReport(r)); console.log('Report regenerated: output/report.html'); })"
+report: ## Re-render HTML from the latest run's JSON result (no LLM calls)
+	@latest=$$(ls -t output/*/report.json 2>/dev/null | head -1); \
+	if [ -z "$$latest" ]; then echo "No output/*/report.json found — run 'make review' first"; exit 1; fi; \
+	out=$${latest%.json}.html; \
+	node -e "import('./dist/report/html.js').then(m => { const fs = require('fs'); const r = JSON.parse(fs.readFileSync('$$latest','utf8')); fs.writeFileSync('$$out', m.renderReport(r)); console.log('Report regenerated: ' + '$$out'); })"
 
 clean: ## Remove build artifacts
 	rm -rf dist/ output/

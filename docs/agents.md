@@ -1,12 +1,12 @@
 # Agents
 
-Reference for each of the five agents in the code review pipeline: purpose, provider, model, workload ID, prompt strategy, and output schema.
+Reference for each of the five agents in the code review pipeline: purpose, provider, model, project ID, prompt strategy, and output schema.
 
 Related: [architecture.md](architecture.md) | [gateway-integration.md](gateway-integration.md) | [glossary.md](glossary.md)
 
 ## Table of Contents
 
-- [Workload IDs](#workload-ids)
+- [Workload and Project IDs](#workload-and-project-ids)
 - [Structured Output Approach](#structured-output-approach)
 - [Shared Schemas](#shared-schemas)
 - [SecurityReviewer](#securityreviewer)
@@ -15,19 +15,19 @@ Related: [architecture.md](architecture.md) | [gateway-integration.md](gateway-i
 - [Ranker](#ranker)
 - [Synthesizer](#synthesizer)
 
-## Workload IDs
+## Workload and Project IDs
 
-Each agent is registered with a distinct [Workload ID](glossary.md#workload-id) so gateway records are filterable by role in the Axemere console:
+All five agents share one [Workload ID](glossary.md#workload-id) (`AXEMERE_WORKLOAD_ID`) — it identifies "the code-review pipeline" as a single call site. Attribution granularity instead comes from a distinct [Project ID](glossary.md#project-id) per agent role, so each agent's cost is broken out separately in the console and can be pointed at different provider credentials:
 
-| Agent | Workload ID |
-|-------|-------------|
-| SecurityReviewer | `code-review-security` |
-| PerformanceReviewer | `code-review-performance` |
-| StyleReviewer | `code-review-style` |
-| Ranker | `code-review-ranker` |
-| Synthesizer | `code-review-synthesizer` |
+| Agent | Project ID env var |
+|-------|---------------------|
+| SecurityReviewer | `PROJECT_ID_SECURITY` |
+| PerformanceReviewer | `PROJECT_ID_PERFORMANCE` |
+| StyleReviewer | `PROJECT_ID_STYLE` |
+| Ranker | `PROJECT_ID_RANKER` |
+| Synthesizer | `PROJECT_ID_SYNTHESIZER` |
 
-Workload IDs are defined as constants in `src/config.ts` and passed to `ChatAiGateway` at construction time.
+Each falls back to `AXEMERE_PROJECT_ID` when unset. See `projectIdFor()` in `src/config.ts` and the `[AXEMERE] Workload vs project attribution` comment there for the rationale.
 
 ## Structured Output Approach
 
@@ -97,7 +97,7 @@ export const ReviewOutputSchema = z.object({
 
 **Provider:** `openai`
 **Model:** `gpt-4o`
-**Workload ID:** `code-review-security`
+**Project ID env var:** `PROJECT_ID_SECURITY`
 **Source:** `src/agents/security.ts`
 
 **Intended production mapping:** `anthropic` / `claude-3-5-sonnet-20241022`
@@ -125,7 +125,7 @@ The system prompt directs the agent to examine:
 
 **Provider:** `openai`
 **Model:** `gpt-4o-mini`
-**Workload ID:** `code-review-performance`
+**Project ID env var:** `PROJECT_ID_PERFORMANCE`
 **Source:** `src/agents/performance.ts`
 
 ### Output Schema
@@ -138,7 +138,7 @@ The system prompt directs the agent to examine:
 
 **Provider:** `groq`
 **Model:** `llama-3.3-70b-versatile`
-**Workload ID:** `code-review-style`
+**Project ID env var:** `PROJECT_ID_STYLE`
 **Source:** `src/agents/style.ts`
 
 **Intended production mapping:** `gemini` / `gemini-2.5-flash`
@@ -155,7 +155,7 @@ Note: Gemini requires a different message format (`contents` / `generationConfig
 
 **Provider:** `openai`
 **Model:** `gpt-4o-mini`
-**Workload ID:** `code-review-ranker`
+**Project ID env var:** `PROJECT_ID_RANKER`
 **Source:** `src/agents/ranker.ts`
 
 ### Output Schema
@@ -190,7 +190,7 @@ export const CategorySchema = z.enum(["security", "performance", "style"]);
 
 **Provider:** `groq`
 **Model:** `llama-3.3-70b-versatile`
-**Workload ID:** `code-review-synthesizer`
+**Project ID env var:** `PROJECT_ID_SYNTHESIZER`
 **Source:** `src/agents/synthesizer.ts`
 
 **Intended production mapping:** `anthropic` / `claude-3-5-haiku-20241022`

@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { AGENT_CONFIGS, WORKLOAD_SECURITY, WORKLOAD_PERFORMANCE, WORKLOAD_STYLE, WORKLOAD_RANKER, WORKLOAD_SYNTHESIZER, newRunId } from "../src/config.js";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { AiGatewayConfig } from "@axemere/gateway";
+import { AGENT_CONFIGS, projectIdFor, newRunId } from "../src/config.js";
 
 describe("AGENT_CONFIGS", () => {
   it("has an entry for every agent role", () => {
@@ -22,29 +23,49 @@ describe("AGENT_CONFIGS", () => {
   });
 });
 
-describe("workload IDs", () => {
-  it("are all non-empty strings", () => {
-    for (const wl of [WORKLOAD_SECURITY, WORKLOAD_PERFORMANCE, WORKLOAD_STYLE, WORKLOAD_RANKER, WORKLOAD_SYNTHESIZER]) {
-      expect(typeof wl).toBe("string");
-      expect(wl.length).toBeGreaterThan(0);
+describe("projectIdFor", () => {
+  const ROLE_ENV_VARS = [
+    "PROJECT_ID_SECURITY",
+    "PROJECT_ID_PERFORMANCE",
+    "PROJECT_ID_STYLE",
+    "PROJECT_ID_RANKER",
+    "PROJECT_ID_SYNTHESIZER",
+  ] as const;
+  const savedEnv: Record<string, string | undefined> = {};
+
+  beforeEach(() => {
+    for (const key of [...ROLE_ENV_VARS, "AXEMERE_PROJECT_ID"]) {
+      savedEnv[key] = process.env[key];
+      delete process.env[key];
     }
   });
 
-  it("are all distinct", () => {
-    const ids = [WORKLOAD_SECURITY, WORKLOAD_PERFORMANCE, WORKLOAD_STYLE, WORKLOAD_RANKER, WORKLOAD_SYNTHESIZER];
-    expect(new Set(ids).size).toBe(ids.length);
+  afterEach(() => {
+    for (const [key, value] of Object.entries(savedEnv)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+
+  it("falls back to config.project_id when no role-specific var is set", () => {
+    process.env["AXEMERE_PROJECT_ID"] = "prj_fallback";
+    const config = new AiGatewayConfig();
+    expect(projectIdFor("security", config)).toBe("prj_fallback");
+  });
+
+  it("uses the role-specific PROJECT_ID_* var when set", () => {
+    process.env["AXEMERE_PROJECT_ID"] = "prj_fallback";
+    process.env["PROJECT_ID_SECURITY"] = "prj_code_review_security";
+    const config = new AiGatewayConfig();
+    expect(projectIdFor("security", config)).toBe("prj_code_review_security");
+    expect(projectIdFor("performance", config)).toBe("prj_fallback");
   });
 });
 
 describe("newRunId", () => {
-  it("returns an 8-character string", () => {
+  it("returns a 14-character numeric timestamp string", () => {
     const id = newRunId();
     expect(typeof id).toBe("string");
-    expect(id.length).toBe(8);
-  });
-
-  it("returns unique values on successive calls", () => {
-    const ids = new Set(Array.from({ length: 100 }, () => newRunId()));
-    expect(ids.size).toBe(100);
+    expect(id).toMatch(/^\d{14}$/);
   });
 });

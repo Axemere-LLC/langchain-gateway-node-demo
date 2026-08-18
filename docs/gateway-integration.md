@@ -33,7 +33,7 @@ The TypeScript SDK (`@axemere/gateway` v0.1.8) supports two integration patterns
 
 ### Explicit Mode — ChatAiGateway
 
-The application wraps `AiGatewayClient.execute()` inside a custom LangChain `BaseChatModel` subclass called `ChatAiGateway` (defined in `src/llm.ts`). Each call specifies `provider`, `model`, `workload_id`, and `labels` explicitly. The gateway returns both the completion content and full [metering](glossary.md#metering) in the response body.
+The application wraps `AiGatewayClient.execute()` inside a custom LangChain `BaseChatModel` subclass called `ChatAiGateway` (defined in `src/llm.ts`). Each call specifies `provider`, `model`, `workload_id`, `project_id`, and `labels` explicitly. The gateway returns both the completion content and full [metering](glossary.md#metering) in the response body.
 
 This is the pattern used in this project. It is preferred here because metering is a first-class demo concern and must be available inline in the chain result.
 
@@ -45,6 +45,7 @@ export class ChatAiGateway extends BaseChatModel {
       provider: this.provider,
       model:    this.model_,
       workload_id: this.workloadId,
+      project_id:  this.projectId,
       labels:   this.labels,
       max_tokens: this.maxTokens,
     });
@@ -100,7 +101,8 @@ No custom class is needed. The gateway intercepts the request, records it, and f
 | `messages` | `Message[]` | OpenAI-format message array (`role` + `content`) |
 | `provider` | `string` | Target provider (e.g., `"openai"`, `"groq"`) |
 | `model` | `string` | Model identifier within that provider |
-| `workload_id` | `string` | [Workload ID](glossary.md#workload-id) for this call |
+| `workload_id` | `string` | [Workload ID](glossary.md#workload-id) for this call — one shared value for the whole pipeline |
+| `project_id` | `string` | [Project ID](glossary.md#project-id) for this call — varies per agent role; see `projectIdFor()` in `src/config.ts` |
 | `labels` | `Record<string, string>` | Arbitrary key-value labels attached to the gateway record |
 | `max_tokens` | `number` | Maximum completion tokens (optional — defaults to `256` if omitted) |
 
@@ -119,7 +121,7 @@ No custom class is needed. The gateway intercepts the request, records it, and f
 Every gateway record is tagged with the labels passed to `execute()`. The Axemere console Records page accepts `label_key` and `label_value` query parameters to pre-filter the view:
 
 ```
-https://console.axemere.ai/records?label_key=run_id&label_value=a4ac8aa1
+https://console.axemere.ai/records?label_key=run_id&label_value=20260818145233
 ```
 
 This demo uses `run_id` as the label key, but the pattern works for any label you define — `environment`, `customer_id`, `feature_flag`, etc. The HTML report links the run ID in its header directly to this URL, so readers can jump from the report to the full gateway trace in one click.
@@ -164,7 +166,13 @@ Copy `.env.example` to `.env` and fill in values before running the pipeline.
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `AXEMERE_GATEWAY_TOKEN` | Yes | — | Your gateway token from [console.axemere.ai](https://console.axemere.ai) |
-| `AXEMERE_PROJECT_ID` | Yes | — | Your [project ID](glossary.md#project-id) for workload attribution |
+| `AXEMERE_PROJECT_ID` | Yes | — | Fallback [project ID](glossary.md#project-id) used by any agent role without its own `PROJECT_ID_*` override |
+| `AXEMERE_WORKLOAD_ID` | No | — | [Workload ID](glossary.md#workload-id) shared by every agent in the pipeline |
+| `PROJECT_ID_SECURITY` | No | `AXEMERE_PROJECT_ID` | Project for the SecurityReviewer |
+| `PROJECT_ID_PERFORMANCE` | No | `AXEMERE_PROJECT_ID` | Project for the PerformanceReviewer |
+| `PROJECT_ID_STYLE` | No | `AXEMERE_PROJECT_ID` | Project for the StyleReviewer |
+| `PROJECT_ID_RANKER` | No | `AXEMERE_PROJECT_ID` | Project for the Ranker |
+| `PROJECT_ID_SYNTHESIZER` | No | `AXEMERE_PROJECT_ID` | Project for the Synthesizer |
 | `AXEMERE_GATEWAY_URL` | No | `http://localhost:7080` | Gateway base URL. Omit for local Docker gateway; set to `https://us.gw.axemere.ai` for the managed cloud gateway. |
 | `AXEMERE_PROVIDER` | No | — | Optional default provider override |
 | `AXEMERE_MODEL` | No | — | Optional default model override |

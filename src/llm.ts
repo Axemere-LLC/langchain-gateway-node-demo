@@ -23,6 +23,9 @@ export interface ChatAiGatewayParams extends BaseChatModelParams {
   provider: string;
   model: string;
   workloadId: string;
+  // Per-role project override — see [AXEMERE] Workload vs project attribution in config.ts.
+  // Falls back to config.project_id when omitted.
+  projectId?: string;
   labels?: Record<string, string>;
   // Optional: override the SDK's default of 256. Code review agents need 1024–4096
   // to avoid truncated JSON mid-output. See AGENT_CONFIGS in config.ts for per-agent values.
@@ -34,6 +37,7 @@ export class ChatAiGateway extends BaseChatModel {
   private provider: string;
   private model_: string;
   private workloadId: string;
+  private projectId: string | undefined;
   private labels: Record<string, string>;
   private maxTokens: number | undefined;
 
@@ -50,6 +54,7 @@ export class ChatAiGateway extends BaseChatModel {
     this.provider = params.provider;
     this.model_ = params.model;
     this.workloadId = params.workloadId;
+    this.projectId = params.projectId;
     this.labels = params.labels ?? {};
     this.maxTokens = params.maxTokens;
   }
@@ -77,6 +82,7 @@ export class ChatAiGateway extends BaseChatModel {
       provider: this.provider,
       model: this.model_,
       workload_id: this.workloadId,
+      ...(this.projectId !== undefined && { project_id: this.projectId }),
       labels: this.labels,
       ...(this.maxTokens !== undefined && { max_tokens: this.maxTokens }),
     });

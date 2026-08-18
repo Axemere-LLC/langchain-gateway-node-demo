@@ -65,9 +65,9 @@ cp .env.example .env
 
 make review
 # Default target: examples/sample-vulnerable.ts
-# Output: output/report.html
+# Output: output/<run_id>/report.html
 
-open output/report.html
+open output/*/report.html
 ```
 
 To review a different file:
@@ -86,7 +86,7 @@ make review FILE=path/to/your/code.ts
 | `make test` | Run unit tests with Vitest |
 | `make lint` | Run ESLint and TypeScript type check |
 | `make review` | Run the full pipeline on `FILE` (default: `examples/sample-vulnerable.ts`) |
-| `make report` | Re-render the HTML report from the last `output/report.json` without LLM calls |
+| `make report` | Re-render the HTML report from the latest run's `output/<run_id>/report.json` without LLM calls |
 | `make clean` | Remove `dist/` and `output/` build artifacts |
 
 ## What the Report Shows

@@ -1,14 +1,25 @@
 import { AiGatewayConfig } from "@axemere/gateway";
 
-// [AXEMERE] Workload IDs
-// Each logical role in the pipeline gets its own workload_id so gateway records
-// are filterable by role (e.g. "show me all security-reviewer calls this week").
-// Workloads are registered in the Axemere console under your project.
-export const WORKLOAD_SECURITY = "code-review-security";
-export const WORKLOAD_PERFORMANCE = "code-review-performance";
-export const WORKLOAD_STYLE = "code-review-style";
-export const WORKLOAD_RANKER = "code-review-ranker";
-export const WORKLOAD_SYNTHESIZER = "code-review-synthesizer";
+// [AXEMERE] Workload vs project attribution
+// One workload_id identifies "the code-review pipeline" as a call site — it comes
+// from AXEMERE_WORKLOAD_ID (a first-class AiGatewayConfig field, already read from
+// env by the SDK) and is shared by every agent. Cost/usage attribution instead
+// varies per agent role via a distinct project_id per role: projects are both the
+// billing/attribution boundary and the credential-scoping boundary on the managed
+// gateway, so each reviewer's calls can be billed and credentialed independently.
+// Each PROJECT_ID_* falls back to the single AXEMERE_PROJECT_ID if its role-specific
+// var is unset, so the demo still runs out-of-the-box with just one project configured.
+// Alternatives:
+//   A) One workload per role (this demo's previous design) — filterable by role in
+//      the console, but conflates "who is calling" with "what should this cost
+//      against," and requires N workload registrations instead of one.
+//   B) One project for the whole demo — simplest, but all five agents' spend
+//      collapses into a single line item with no per-role cost breakdown.
+// Docs: https://axemere.ai/docs/guides/configuration/workloads
+export function projectIdFor(role: AgentName, config: AiGatewayConfig): string {
+  const envVar = `PROJECT_ID_${role.toUpperCase()}`;
+  return process.env[envVar] || config.project_id;
+}
 
 // [AXEMERE] Provider + model assignment per agent
 // Different review dimensions benefit from different model strengths:
@@ -57,7 +68,20 @@ export function createGatewayConfig(): AiGatewayConfig {
   return new AiGatewayConfig();
 }
 
+// [AXEMERE] run_id format
+// Local-time YYYYMMDDHHMMSS instead of a random UUID: sortable lexicographically
+// (equals chronological order), human-readable in the console's label filter, and
+// doubles as the output directory name. Sub-second collisions aren't a concern for
+// this demo's usage pattern (one run at a time, manually triggered).
 export function newRunId(): string {
-  // Short ID that tags all gateway records from a single pipeline run.
-  return crypto.randomUUID().slice(0, 8);
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    String(now.getFullYear()) +
+    pad(now.getMonth() + 1) +
+    pad(now.getDate()) +
+    pad(now.getHours()) +
+    pad(now.getMinutes()) +
+    pad(now.getSeconds())
+  );
 }

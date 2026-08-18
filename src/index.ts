@@ -15,7 +15,7 @@ Usage:
   node dist/index.js --help          Show this help
 
 Options:
-  --out <path>   Write HTML report to a file (default: output/report.html)
+  --out <path>   Write HTML report to a file (default: output/<run_id>/report.html)
   --json         Also write raw JSON result alongside the HTML report
 
 Environment variables (see .env.example):
@@ -54,7 +54,7 @@ async function main(): Promise<void> {
   }
 
   const outFlag = args.indexOf("--out");
-  const outPath = outFlag !== -1 ? args[outFlag + 1] : "output/report.html";
+  const explicitOutPath = outFlag !== -1 ? args[outFlag + 1] : undefined;
   const writeJson = args.includes("--json");
 
   const { code, label } = await readCode(args);
@@ -62,6 +62,12 @@ async function main(): Promise<void> {
 
   const config = createGatewayConfig();
   const result = await runPipeline(code, config);
+
+  // [AXEMERE] Per-run output directory
+  // Defaults to output/<run_id>/report.html so successive runs don't overwrite
+  // each other and the directory name matches the run_id gateway label — the
+  // same value used to filter all of a run's records in the console.
+  const outPath = explicitOutPath ?? `output/${result.run_id}/report.html`;
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   const html = renderReport(result);

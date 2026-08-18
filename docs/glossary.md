@@ -77,7 +77,7 @@ See: [docs/gateway-integration.md](gateway-integration.md#integration-paths)
 
 ### Project ID
 
-A unique identifier for a project registered in the Axemere console. Set via `AXEMERE_PROJECT_ID`. All gateway records are attributed to this project, enabling cost tracking and workload management at the project level.
+A unique identifier for a project registered in the Axemere console. This demo assigns one project per agent role (`PROJECT_ID_SECURITY`, `PROJECT_ID_PERFORMANCE`, `PROJECT_ID_STYLE`, `PROJECT_ID_RANKER`, `PROJECT_ID_SYNTHESIZER`), each falling back to `AXEMERE_PROJECT_ID` when unset. Projects are the billing/attribution boundary and the credential-scoping boundary on the managed gateway — see [Workload ID](#workload-id) for how this differs from workload.
 
 ---
 
@@ -115,7 +115,7 @@ A unique identifier assigned by the Gateway to each individual LLM call. Returne
 
 ### Run ID
 
-An 8-character identifier generated at the start of each pipeline execution (a prefix of a UUID v4). It is attached to every gateway record for that run as the `run_id` label, making the full set of five calls queryable together:
+A 14-character local-time timestamp (`YYYYMMDDHHMMSS`) generated at the start of each pipeline execution. It is attached to every gateway record for that run as the `run_id` label, making the full set of five calls queryable together, and doubles as the output directory name (`output/<run_id>/`):
 
 ```
 GET /v1/records?label.run_id=<run_id>
@@ -152,6 +152,6 @@ See: [docs/agents.md](agents.md#structured-output-approach)
 
 ### Workload ID
 
-A string identifier that categorizes a gateway call by its logical role within a project. Workloads are registered in the Axemere console and enable filtering, cost attribution, and policy enforcement at the role level. For example, all calls made by the SecurityReviewer carry `workload_id: "code-review-security"`.
+A string identifier for a call site — "the code-review pipeline" — set once via `AXEMERE_WORKLOAD_ID` and shared by every agent in this demo. Workloads are registered in the Axemere console. Unlike [Project ID](#project-id), workload does not vary per agent role here: attribution granularity comes from the per-role project instead, so a single workload registration covers the whole pipeline.
 
 See: [docs/agents.md](agents.md#workload-ids)

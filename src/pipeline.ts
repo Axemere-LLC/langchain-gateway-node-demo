@@ -5,21 +5,12 @@ import { runPerformanceReview } from "./agents/performance.js";
 import { runStyleReview } from "./agents/style.js";
 import { runRanker } from "./agents/ranker.js";
 import { runSynthesizer } from "./agents/synthesizer.js";
-import {
-  WORKLOAD_SECURITY,
-  WORKLOAD_PERFORMANCE,
-  WORKLOAD_STYLE,
-  WORKLOAD_RANKER,
-  WORKLOAD_SYNTHESIZER,
-  AGENT_CONFIGS,
-  newRunId,
-} from "./config.js";
+import { AGENT_CONFIGS, projectIdFor, newRunId } from "./config.js";
 import type { AgentMetering, PipelineResult } from "./types.js";
 
 function buildLLM(
   config: AiGatewayConfig,
   agentName: keyof typeof AGENT_CONFIGS,
-  workloadId: string,
   runId: string
 ): ChatAiGateway {
   const { provider, model, maxTokens } = AGENT_CONFIGS[agentName];
@@ -27,7 +18,9 @@ function buildLLM(
     config,
     provider,
     model,
-    workloadId,
+    // [AXEMERE] Single generic workload, per-role project — see config.ts.
+    workloadId: config.workload_id,
+    projectId: projectIdFor(agentName, config),
     maxTokens,
     // [AXEMERE] Run-level label
     // Every gateway record from this pipeline run shares the same run_id label,
@@ -61,11 +54,11 @@ export async function runPipeline(
   const runId = newRunId();
   const pipelineStart = Date.now();
 
-  const securityLLM = buildLLM(config, "security", WORKLOAD_SECURITY, runId);
-  const performanceLLM = buildLLM(config, "performance", WORKLOAD_PERFORMANCE, runId);
-  const styleLLM = buildLLM(config, "style", WORKLOAD_STYLE, runId);
-  const rankerLLM = buildLLM(config, "ranker", WORKLOAD_RANKER, runId);
-  const synthesizerLLM = buildLLM(config, "synthesizer", WORKLOAD_SYNTHESIZER, runId);
+  const securityLLM = buildLLM(config, "security", runId);
+  const performanceLLM = buildLLM(config, "performance", runId);
+  const styleLLM = buildLLM(config, "style", runId);
+  const rankerLLM = buildLLM(config, "ranker", runId);
+  const synthesizerLLM = buildLLM(config, "synthesizer", runId);
 
   // [AXEMERE] Parallel review phase
   // Three specialist reviewers run concurrently via Promise.all — each routes

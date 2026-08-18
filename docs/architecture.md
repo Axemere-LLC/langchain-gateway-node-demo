@@ -27,11 +27,11 @@ The pipeline takes a source file as input and produces a ranked HTML report. Fiv
 
 Three specialist reviewer agents execute concurrently against the same source code via `Promise.all()`. Each agent routes to a different [provider](glossary.md#provider) through the Gateway:
 
-| Agent | Provider | Model | Workload ID |
-|-------|----------|-------|-------------|
-| SecurityReviewer | openai | gpt-4o | `code-review-security` |
-| PerformanceReviewer | openai | gpt-4o-mini | `code-review-performance` |
-| StyleReviewer | groq | llama-3.3-70b-versatile | `code-review-style` |
+| Agent | Provider | Model | Project ID env var |
+|-------|----------|-------|---------------------|
+| SecurityReviewer | openai | gpt-4o | `PROJECT_ID_SECURITY` |
+| PerformanceReviewer | openai | gpt-4o-mini | `PROJECT_ID_PERFORMANCE` |
+| StyleReviewer | groq | llama-3.3-70b-versatile | `PROJECT_ID_STYLE` |
 
 Each agent produces a `ReviewOutput`: a list of [findings](glossary.md#findings) and a one-paragraph summary. At the end of Phase 1 the pipeline holds three independent `ReviewOutput` objects.
 
@@ -39,7 +39,7 @@ Each agent produces a `ReviewOutput`: a list of [findings](glossary.md#findings)
 
 The [Ranker](glossary.md#ranker) agent receives all findings from all three reviewers in a single prompt. It assigns a cross-dimension priority `rank` to each finding (rank 1 = most critical overall) and returns a `RankerOutput` containing the sorted list and a brief explanation of the ranking strategy applied.
 
-The Ranker uses OpenAI `gpt-4o-mini` via workload `code-review-ranker`.
+The Ranker uses OpenAI `gpt-4o-mini`, attributed to project `PROJECT_ID_RANKER`.
 
 ### Phase 3: Synthesize
 
@@ -49,7 +49,7 @@ The Synthesizer agent receives the ranked findings and produces a `SynthesisOutp
 - `action_items` — ordered list with priority labels
 - `risk_assessment` — overall risk level and rationale
 
-The Synthesizer uses Groq `llama-3.3-70b-versatile` via workload `code-review-synthesizer`.
+The Synthesizer uses Groq `llama-3.3-70b-versatile`, attributed to project `PROJECT_ID_SYNTHESIZER`.
 
 ## Data Flow
 
@@ -82,7 +82,7 @@ The `PipelineResult` type carries all intermediate outputs (`security`, `perform
 flowchart TD
     CLI[CLI / index.ts]
     CLI --> Pipeline[pipeline.ts<br>runPipeline]
-    Pipeline --> Config[config.ts<br>AGENT_CONFIGS<br>WORKLOAD_*]
+    Pipeline --> Config[config.ts<br>AGENT_CONFIGS<br>projectIdFor]
     Pipeline --> LLM[llm.ts<br>ChatAiGateway]
     LLM --> SDK[@axemere/gateway<br>AiGatewayClient]
     SDK --> GW[Axemere Gateway]
@@ -131,11 +131,13 @@ See [docs/gateway-integration.md](gateway-integration.md) for how metering is su
 
 ## Run ID Label Strategy
 
-At the start of each `runPipeline()` call, an 8-character [run ID](glossary.md#run-id) is generated:
+At the start of each `runPipeline()` call, a 14-character local-time [run ID](glossary.md#run-id) is generated:
 
 ```typescript
-const runId = crypto.randomUUID().slice(0, 8);
+const runId = newRunId(); // "20260818145233" — YYYYMMDDHHMMSS, local time
 ```
+
+This value also names the output directory (`output/<run_id>/`), so a run's report, JSON result, and gateway records all share the same identifier.
 
 Every `ChatAiGateway` instance created for that run receives this ID as a gateway label alongside an `agent` label:
 
