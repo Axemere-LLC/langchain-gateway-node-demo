@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { AiGatewayConfig } from "@axemere/gateway";
-import { AGENT_CONFIGS, projectIdFor, newRunId } from "../src/config.js";
+import { AGENT_CONFIGS, projectIdFor, workloadIdFor, newRunId } from "../src/config.js";
 
 describe("AGENT_CONFIGS", () => {
   it("has an entry for every agent role", () => {
@@ -59,6 +59,31 @@ describe("projectIdFor", () => {
     const config = new AiGatewayConfig();
     expect(projectIdFor("security", config)).toBe("prj_code_review_security");
     expect(projectIdFor("performance", config)).toBe("prj_fallback");
+  });
+});
+
+describe("workloadIdFor", () => {
+  let savedWorkloadId: string | undefined;
+
+  beforeEach(() => {
+    savedWorkloadId = process.env["AXEMERE_WORKLOAD_ID"];
+    delete process.env["AXEMERE_WORKLOAD_ID"];
+  });
+
+  afterEach(() => {
+    if (savedWorkloadId === undefined) delete process.env["AXEMERE_WORKLOAD_ID"];
+    else process.env["AXEMERE_WORKLOAD_ID"] = savedWorkloadId;
+  });
+
+  it("falls back to the WORKLOAD default when AXEMERE_WORKLOAD_ID is unset", () => {
+    const config = new AiGatewayConfig();
+    expect(workloadIdFor(config)).toBe("wl_code_review_demo");
+  });
+
+  it("honors an explicit AXEMERE_WORKLOAD_ID from the environment", () => {
+    process.env["AXEMERE_WORKLOAD_ID"] = "wl_custom";
+    const config = new AiGatewayConfig();
+    expect(workloadIdFor(config)).toBe("wl_custom");
   });
 });
 

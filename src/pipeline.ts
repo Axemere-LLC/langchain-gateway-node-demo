@@ -5,7 +5,7 @@ import { runPerformanceReview } from "./agents/performance.js";
 import { runStyleReview } from "./agents/style.js";
 import { runRanker } from "./agents/ranker.js";
 import { runSynthesizer } from "./agents/synthesizer.js";
-import { AGENT_CONFIGS, projectIdFor, newRunId } from "./config.js";
+import { AGENT_CONFIGS, projectIdFor, workloadIdFor, newRunId } from "./config.js";
 import type { AgentMetering, PipelineResult } from "./types.js";
 
 function buildLLM(
@@ -19,7 +19,7 @@ function buildLLM(
     provider,
     model,
     // [AXEMERE] Single generic workload, per-role project — see config.ts.
-    workloadId: config.workload_id,
+    workloadId: workloadIdFor(config),
     projectId: projectIdFor(agentName, config),
     maxTokens,
     // [AXEMERE] Run-level label

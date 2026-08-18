@@ -167,7 +167,7 @@ Copy `.env.example` to `.env` and fill in values before running the pipeline.
 |----------|----------|---------|-------------|
 | `AXEMERE_GATEWAY_TOKEN` | Yes | — | Your gateway token from [console.axemere.ai](https://console.axemere.ai) |
 | `AXEMERE_PROJECT_ID` | Yes | — | Fallback [project ID](glossary.md#project-id) used by any agent role without its own `PROJECT_ID_*` override |
-| `AXEMERE_WORKLOAD_ID` | No | — | [Workload ID](glossary.md#workload-id) shared by every agent in the pipeline |
+| `AXEMERE_WORKLOAD_ID` | No | `wl_code_review_demo` | [Workload ID](glossary.md#workload-id) shared by every agent in the pipeline; `workloadIdFor()` in `src/config.ts` falls back to the default when unset |
 | `PROJECT_ID_SECURITY` | No | `AXEMERE_PROJECT_ID` | Project for the SecurityReviewer |
 | `PROJECT_ID_PERFORMANCE` | No | `AXEMERE_PROJECT_ID` | Project for the PerformanceReviewer |
 | `PROJECT_ID_STYLE` | No | `AXEMERE_PROJECT_ID` | Project for the StyleReviewer |

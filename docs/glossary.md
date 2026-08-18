@@ -152,6 +152,6 @@ See: [docs/agents.md](agents.md#structured-output-approach)
 
 ### Workload ID
 
-A string identifier for a call site — "the code-review pipeline" — set once via `AXEMERE_WORKLOAD_ID` and shared by every agent in this demo. Workloads are registered in the Axemere console. Unlike [Project ID](#project-id), workload does not vary per agent role here: attribution granularity comes from the per-role project instead, so a single workload registration covers the whole pipeline.
+A string identifier for a call site — "the code-review pipeline" — shared by every agent in this demo. Defaults to `wl_code_review_demo` (the `WORKLOAD` constant in `src/config.ts`, applied by `workloadIdFor()`) but can be overridden with `AXEMERE_WORKLOAD_ID`. Workloads are registered in the Axemere console. Unlike [Project ID](#project-id), workload does not vary per agent role here: attribution granularity comes from the per-role project instead, so a single workload registration covers the whole pipeline.
 
 See: [docs/agents.md](agents.md#workload-ids)

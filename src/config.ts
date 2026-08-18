@@ -16,9 +16,22 @@ import { AiGatewayConfig } from "@axemere/gateway";
 //   B) One project for the whole demo — simplest, but all five agents' spend
 //      collapses into a single line item with no per-role cost breakdown.
 // Docs: https://axemere.ai/docs/guides/configuration/workloads
+//
+// WORKLOAD is a fallback default, not the only source: config.workload_id is
+// already populated from AXEMERE_WORKLOAD_ID by the SDK when that env var is
+// set. workloadIdFor() only falls back to WORKLOAD when it isn't. This keeps
+// the demo's shared secrets file (which also backs the Python demo, whose
+// default workload_id is a different value) from having to carry a
+// one-size-fits-all AXEMERE_WORKLOAD_ID.
+const WORKLOAD = "wl_code_review_demo";
+
 export function projectIdFor(role: AgentName, config: AiGatewayConfig): string {
   const envVar = `PROJECT_ID_${role.toUpperCase()}`;
   return process.env[envVar] || config.project_id;
+}
+
+export function workloadIdFor(config: AiGatewayConfig): string {
+  return config.workload_id || WORKLOAD;
 }
 
 // [AXEMERE] Provider + model assignment per agent
